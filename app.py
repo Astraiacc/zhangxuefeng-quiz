@@ -672,6 +672,18 @@ def health():
     return jsonify({"status": "ok", "model": MODEL})
 
 
+# ── 心跳 + 自动关闭 ──────────────────────────────────────────
+import time as _time
+_last_heartbeat = _time.time()
+
+
+@app.route("/api/heartbeat", methods=["POST"])
+def heartbeat():
+    global _last_heartbeat
+    _last_heartbeat = _time.time()
+    return jsonify({"ok": True})
+
+
 if __name__ == "__main__":
     import webbrowser
     import threading
@@ -695,5 +707,19 @@ if __name__ == "__main__":
         print("  百科问答需要 ANTHROPIC_API_KEY 环境变量")
         print("  专业数据库和测评功能可正常使用")
         print()
+
+    # 自动关机监控：浏览器关了60秒没心跳就退出
+    def auto_shutdown():
+        global _last_heartbeat
+        while True:
+            _time.sleep(15)
+            idle = _time.time() - _last_heartbeat
+            if idle > 60:
+                print()
+                print("  [自动关闭] 浏览器已关闭，服务停止")
+                print("  下次使用请重新运行 start.bat")
+                os._exit(0)
+
+    threading.Thread(target=auto_shutdown, daemon=True).start()
 
     app.run(host="0.0.0.0", port=port, debug=False)
