@@ -1,0 +1,490 @@
+
+// ═══════════════════════════════════════════════════════
+// 知识库 + 对话引擎 v3 · 60+专业 · 大学匹配 · 50+话题
+// ═══════════════════════════════════════════════════════
+
+// ── 专业数据库 ─────────────────────────────────────
+const DB={
+"计算机科学与技术":{cat:"工学/计算机类",rate:"93.9%",salary:"7500",kaoyan:"35%",match:"85%",city:"北京/深圳/杭州/上海",tip:"普通家庭逆袭黄金赛道，但已卷成麻花。985硕进大厂年薪30万+，双非可能做外包。别带'学计算机=财务自由'的幻想进来。"},
+"软件工程":{cat:"工学/计算机类",rate:"94.5%",salary:"8000",kaoyan:"25%",match:"88%",city:"深圳/杭州/北京/成都",tip:"比计算机更偏工程，上手快。35岁危机同样存在，但就业率够高。"},
+"人工智能":{cat:"工学/计算机类",rate:"91.2%",salary:"10000",kaoyan:"60%",match:"70%",city:"北京/深圳/杭州",tip:"门槛高，本科做不了核心岗。算法岗内卷——400分不一定有学上。"},
+"数据科学与大数据":{cat:"工学/计算机类",rate:"90.5%",salary:"8500",kaoyan:"40%",match:"72%",city:"北京/上海/深圳/杭州",tip:"数据分析需求大但天花板不高。想做算法得读研。"},
+"信息安全":{cat:"工学/计算机类",rate:"92.3%",salary:"8000",kaoyan:"35%",match:"80%",city:"北京/成都/西安/深圳",tip:"冷门靠谱。网络安全缺口大，考公也好考。"},
+"物联网工程":{cat:"工学/计算机类",rate:"89.5%",salary:"6500",kaoyan:"35%",match:"65%",city:"深圳/杭州/成都",tip:"概念大于实际。学的杂不精，不如直接学计算机或电子信息。"},
+"电气工程及其自动化":{cat:"工学/电气类",rate:"92.1%",salary:"6500",kaoyan:"30%",match:"78%",city:"各省省会",tip:"进国网敲门砖。稳定但涨幅有限。想高薪去新能源/芯片。"},
+"电子信息工程":{cat:"工学/电子信息类",rate:"91.5%",salary:"7000",kaoyan:"40%",match:"72%",city:"深圳/成都/西安/南京",tip:"软硬通吃就业面广。不读研天花板明显。"},
+"通信工程":{cat:"工学/电子信息类",rate:"89.2%",salary:"6800",kaoyan:"45%",match:"68%",city:"深圳/成都/西安/南京",tip:"华为中兴好去处，但运营商走下坡。5G红利已过。"},
+"集成电路设计":{cat:"工学/电子信息类",rate:"93.5%",salary:"12000",kaoyan:"65%",match:"85%",city:"上海/深圳/北京/成都/西安",tip:"国家战略方向，缺口极大。本科做不了核心，必须读研。"},
+"测控技术与仪器":{cat:"工学/仪器类",rate:"88.5%",salary:"6000",kaoyan:"40%",match:"68%",city:"深圳/苏州/上海/西安",tip:"偏精密仪器和传感技术。就业面广但不精，自动化、电子、机械方向都能去。"},
+"自动化":{cat:"工学/自动化类",rate:"91.0%",salary:"6800",kaoyan:"35%",match:"72%",city:"深圳/苏州/东莞/武汉",tip:"万金油，软硬件都沾。就业面广但不精。"},
+"机械工程":{cat:"工学/机械类",rate:"90.1%",salary:"6000",kaoyan:"35%",match:"70%",city:"苏州/东莞/重庆/武汉",tip:"万金油，天花板不高。智能制造有前景。"},
+"车辆工程":{cat:"工学/机械类",rate:"88.5%",salary:"6500",kaoyan:"40%",match:"65%",city:"上海/长春/武汉/重庆",tip:"传统车企走下坡，新能源崛起。方向对了很香。"},
+"机器人工程":{cat:"工学/自动化类",rate:"90.8%",salary:"7500",kaoyan:"40%",match:"70%",city:"深圳/上海/东莞/苏州",tip:"新兴专业，工业机器人需求旺盛。本科学太基础，读研才有竞争力。"},
+"土木工程":{cat:"工学/土木类",rate:"85.3%",salary:"5500",kaoyan:"30%",match:"75%",city:"各城市均可",tip:"基建时代过去，房地产下行。慎重。"},
+"建筑学":{cat:"工学/土木类",rate:"82.1%",salary:"5800",kaoyan:"35%",match:"60%",city:"一线城市/新一线",tip:"五年制画图到秃。设计院加班严重，性价比不高。"},
+"化学工程与工艺":{cat:"工学/化工类",rate:"86.5%",salary:"5500",kaoyan:"40%",match:"65%",city:"上海/南京/宁波/惠州",tip:"天坑之一。化工厂环境差，薪资不高。除非真的热爱化学。"},
+"环境工程":{cat:"工学/环境类",rate:"83.2%",salary:"5000",kaoyan:"45%",match:"55%",city:"各省省会",tip:"天坑之二。高大上但就业困难薪资低。"},
+"材料科学与工程":{cat:"工学/材料类",rate:"84.5%",salary:"5500",kaoyan:"50%",match:"60%",city:"上海/深圳/苏州",tip:"天坑之三。不读博找不到研发岗。"},
+"生物工程":{cat:"工学/生物类",rate:"80.1%",salary:"5000",kaoyan:"55%",match:"45%",city:"上海/北京/苏州",tip:"天坑之四。就业率最低之一。除非目标是读到博士。"},
+"临床医学(五年制)":{cat:"医学/临床",rate:"85.2%",salary:"6000(规培)",kaoyan:"80%+",match:"95%",city:"各省省会/一线",tip:"最苦的路。5年+规培3年+专培2-3年。越老越值钱。"},
+"临床医学(八年制)":{cat:"医学/临床",rate:"95%+",salary:"10000+",kaoyan:"连读",match:"98%",city:"一线三甲",tip:"分数极高但省考研苦。毕业即博士。"},
+"口腔医学":{cat:"医学/临床",rate:"92.8%",salary:"8000",kaoyan:"55%",match:"90%",city:"各城市均可",tip:"性价比最高之一。AI不能帮你拔牙。开诊所也香。"},
+"麻醉学":{cat:"医学/临床",rate:"90.5%",salary:"8000",kaoyan:"45%",match:"92%",city:"各城市三甲",tip:"最好就业之一。手术室离不开麻醉医生。压力大。"},
+"医学影像学":{cat:"医学/临床",rate:"91.2%",salary:"7000",kaoyan:"40%",match:"90%",city:"各城市医院",tip:"看片子。不上手术台不值夜班。AI辅助在发展但短期替代不了。"},
+"护理学":{cat:"医学/护理",rate:"95%",salary:"5000",kaoyan:"10%",match:"90%",city:"各城市均可",tip:"就业率最高但辛苦。夜班常态。稳定不怕苦可选。"},
+"药学":{cat:"医学/药学",rate:"88.5%",salary:"5500",kaoyan:"50%",match:"70%",city:"上海/北京/杭州/南京",tip:"研发岗读研才够格。本科做药代或药店。"},
+"中医学":{cat:"医学/中医",rate:"82.5%",salary:"5000",kaoyan:"55%",match:"65%",city:"各省省会",tip:"就业两极分化。好医院难进，但开诊所做养生有市场。"},
+"预防医学":{cat:"医学/公卫",rate:"86.5%",salary:"5500",kaoyan:"50%",match:"70%",city:"各省疾控/省会",tip:"疾控中心是主要去向。疫情后需求增，但编制有限。"},
+"数学与应用数学":{cat:"理学/数学",rate:"85.5%",salary:"6500",kaoyan:"60%",match:"45%",city:"一线/新一线",tip:"万能基础学科。转金融/CS/统计都行，但得自己补技能。"},
+"统计学":{cat:"理学/数学",rate:"91.2%",salary:"7500",kaoyan:"45%",match:"70%",city:"北京/上海/深圳/杭州",tip:"数据时代宠儿。进可做算法退可做分析。性价比高。"},
+"物理学":{cat:"理学/物理",rate:"80.3%",salary:"6000",kaoyan:"70%",match:"35%",city:"一线城市",tip:"纯物理就业困难，转行能力强。做科研得读到博士。"},
+"经济学":{cat:"经济学/经济",rate:"87.6%",salary:"5500",kaoyan:"45%",match:"55%",city:"北京/上海/深圳",tip:"看起来高大上实际都是理论。没家里资源可能在银行柜台。"},
+"金融学":{cat:"经济学/金融",rate:"85.8%",salary:"6000",kaoyan:"50%",match:"50%",city:"北京/上海/深圳",tip:"家里没矿别碰。90%的人在银行网点卖理财。"},
+"金融工程":{cat:"经济学/金融",rate:"88.2%",salary:"8000",kaoyan:"55%",match:"60%",city:"北京/上海/深圳",tip:"金融+数学+编程。量化方向吃香但数学要求极高。"},
+"会计学":{cat:"管理学/工商管理",rate:"89.1%",salary:"5000",kaoyan:"30%",match:"65%",city:"各城市均可",tip:"铁饭碗但天花板不高。考CPA关键。AI记账在替代。"},
+"工商管理":{cat:"管理学/工商管理",rate:"82.5%",salary:"5000",kaoyan:"30%",match:"40%",city:"一线城市",tip:"学的太杂什么都不精。毕业等于什么都不会。慎重。"},
+"信息管理与信息系统":{cat:"管理学/管工",rate:"90.5%",salary:"6500",kaoyan:"35%",match:"65%",city:"北京/上海/深圳/杭州",tip:"管理+计算机交叉。懂技术懂业务，企业IT需求大。"},
+"工程造价":{cat:"管理学/管工",rate:"90.5%",salary:"6000",kaoyan:"15%",match:"80%",city:"各城市均可",tip:"土木类最好就业之一。算量预算招投标。房地产下行有影响。"},
+"汉语言文学":{cat:"文学/中文",rate:"83.2%",salary:"4800",kaoyan:"45%",match:"40%",city:"各城市均可",tip:"考公考编好专业。想赚钱别选，想稳定考虑。"},
+"新闻学":{cat:"文学/新闻",rate:"78.5%",salary:"5000",kaoyan:"40%",match:"30%",city:"北京/上海/广州",tip:"80%没从事本行业。自媒体时代专业壁垒为零。"},
+"网络与新媒体":{cat:"文学/新闻",rate:"85.3%",salary:"5500",kaoyan:"25%",match:"55%",city:"北京/上海/杭州/深圳",tip:"比新闻实用但变化快，学校教的可能过时。"},
+"英语":{cat:"文学/外语",rate:"80.5%",salary:"5000",kaoyan:"40%",match:"35%",city:"一线/新一线",tip:"纯英语就业困难。AI翻译越来越强，语言当工具不当专业。"},
+"法学":{cat:"法学/法学",rate:"72.3%",salary:"5000",kaoyan:"55%",match:"40%",city:"北京/上海/一线",tip:"法考通过率低就业两极分化。红圈所百万但大部分人拿不到入场券。"},
+"知识产权":{cat:"法学/法学",rate:"85.8%",salary:"6000",kaoyan:"40%",match:"60%",city:"北京/上海/深圳/广州",tip:"新兴方向。理工科背景更有优势。"},
+"教育学":{cat:"教育学/教育",rate:"85.5%",salary:"4500",kaoyan:"50%",match:"50%",city:"各城市均可",tip:"想当老师选师范类具体学科，别选教育学。"},
+"学前教育":{cat:"教育学/教育",rate:"90.2%",salary:"4000",kaoyan:"10%",match:"85%",city:"各城市均可",tip:"就业率高但薪资低。生育率下降有隐忧。"},
+"视觉传达设计":{cat:"艺术学/设计",rate:"85.5%",salary:"5500",kaoyan:"20%",match:"60%",city:"北京/上海/深圳/杭州/广州",tip:"就业面广但竞争激烈。作品说话。"},
+"数字媒体艺术":{cat:"艺术学/设计",rate:"87.2%",salary:"6000",kaoyan:"20%",match:"65%",city:"北京/上海/深圳/成都",tip:"游戏/影视/互联网都需要。技术+艺术交叉有前景。"},
+};
+
+// ── 大学数据库 ─────────────────────────────────────
+const UNI={
+"武汉理工大学":{tier:"211",city:"武汉",strong:["材料","车辆工程","船舶","通信","测控"],note:"211里偏工科的强校。材料和车辆是王牌。武汉城市不错，就业机会多。"},
+"华中科技大学":{tier:"985",city:"武汉",strong:["机械","电气","计算机","光学","医学"],note:"985理工强校。机械和电气全国顶尖。武汉性价比最高的985。"},
+"武汉大学":{tier:"985",city:"武汉",strong:["法学","遥感","水利","经管","新闻"],note:"综合性985。法学和遥感是王牌。校园美但就业不如华科理工。"},
+"清华大学":{tier:"985/C9",city:"北京",strong:["计算机","电子","建筑","经管","自动化"],note:"不用说了。能上就上。"},
+"北京大学":{tier:"985/C9",city:"北京",strong:["数学","物理","中文","经济","法学"],note:"综合性最强。理学和人文社科顶尖。"},
+"浙江大学":{tier:"985/C9",city:"杭州",strong:["计算机","电气","机械","光学","农学"],note:"浙江唯一985。计算机全国前三。杭州互联网就业好。"},
+"上海交通大学":{tier:"985/C9",city:"上海",strong:["机械","船舶","计算机","医学","电气"],note:"工科强校。上海就业资源丰富。"},
+"复旦大学":{tier:"985/C9",city:"上海",strong:["新闻","经济","数学","医学","中文"],note:"文理综合顶尖。新闻和经济全国第一梯队。"},
+"南京大学":{tier:"985/C9",city:"南京",strong:["物理","天文","计算机","中文","化学"],note:"低调实力派。物理和天文全国顶尖。"},
+"中国科学技术大学":{tier:"985/C9",city:"合肥",strong:["物理","数学","计算机","化学","生物"],note:"科研最强之一。但合肥城市一般，就业不如北上深。"},
+"哈尔滨工业大学":{tier:"985/C9",city:"哈尔滨/深圳/威海",strong:["航天","机械","焊接","计算机","土木"],note:"航天强校。深圳校区就业好但分数高。本部冷。"},
+"西安交通大学":{tier:"985/C9",city:"西安",strong:["电气","机械","能源","管理","动力"],note:"老牌工科强校。电气全国顶尖。西安就业不如沿海。"},
+"北京航空航天大学":{tier:"985",city:"北京",strong:["计算机","航空","材料","仪器","软件"],note:"计算机和航空顶尖。北京就业好。"},
+"北京理工大学":{tier:"985",city:"北京",strong:["兵器","车辆","光电","信息"],note:"国防七子之一。兵器和车辆是王牌。"},
+"同济大学":{tier:"985",city:"上海",strong:["土木","建筑","城市规划","汽车","设计"],note:"土木建筑全国第一。但这两个行业在下行。"},
+"南开大学":{tier:"985",city:"天津",strong:["化学","数学","金融","历史","经济"],note:"老牌名校。化学和金融不错。天津就业一般。"},
+"天津大学":{tier:"985",city:"天津",strong:["化工","建筑","仪器","精密","水利"],note:"化工全国第一。仪器也是王牌。"},
+"中山大学":{tier:"985",city:"广州",strong:["医学","岭南经管","中文","生物","物理"],note:"广州就业好。医学很强。"},
+"华南理工大学":{tier:"985",city:"广州",strong:["轻工","食品","建筑","材料","化工"],note:"广州理工强校。轻工全国第一。"},
+"四川大学":{tier:"985",city:"成都",strong:["口腔","医学","化学","材料","文学"],note:"口腔医学全国第一。成都生活舒适。"},
+"电子科技大学":{tier:"985",city:"成都",strong:["电子","通信","计算机","光电"],note:"电子信息最强校之一。成都就业不错。"},
+"西安电子科技大学":{tier:"211",city:"西安",strong:["通信","电子","计算机","密码","微波"],note:"211但电子信息实力堪比985。性价比极高。"},
+"北京邮电大学":{tier:"211",city:"北京",strong:["通信","计算机","信息","电子"],note:"通信和计算机就业极好。北京互联网圈认可度高。"},
+"南京航空航天大学":{tier:"211",city:"南京",strong:["航空","机械","电气","自动化"],note:"航空强校。南京就业好。"},
+"南京理工大学":{tier:"211",city:"南京",strong:["兵器","化工","光学","自动化"],note:"国防七子。兵器全国顶尖。"},
+"华东理工大学":{tier:"211",city:"上海",strong:["化工","化学","材料","药学"],note:"化工强校。上海就业好但化工本身是天坑。"},
+"上海财经大学":{tier:"211",city:"上海",strong:["会计","金融","经济","统计"],note:"财经类顶尖。金融就业好但要家里有资源。"},
+"中央财经大学":{tier:"211",city:"北京",strong:["金融","会计","财政","保险"],note:"财经类强校。北京金融圈认可度高。"},
+"对外经济贸易大学":{tier:"211",city:"北京",strong:["国际贸易","金融","外语","会计"],note:"外贸和金融强。但外贸整体在走下坡。"},
+"深圳大学":{tier:"双非",city:"深圳",strong:["计算机","光电","建筑","经济"],note:"非211但深圳就业不输211。城市决定一切。"},
+"杭州电子科技大学":{tier:"双非",city:"杭州",strong:["计算机","电子","会计","自动化"],note:"双非里计算机最强之一。杭州互联网就业好。"},
+"南京邮电大学":{tier:"双非",city:"南京",strong:["通信","电子","计算机","光学"],note:"通信和电子就业好。南京IT圈认可度高。"},
+"重庆邮电大学":{tier:"双非",city:"重庆",strong:["通信","计算机","自动化"],note:"西南地区通信强校。就业不错。"},
+};
+
+// ── 分数档位 ──────────────────────────────────────
+const TIERS=[
+{min:660,t:"顶尖985",s:"清北复交浙",m:"计算机/金融/临床8年/电子信息",tip:"选择权在你手上。清北的牌子本身就是筛子。"},
+{min:620,t:"中上985",s:"南开/武大/华科/中大/厦大/哈工大/西交/同济",m:"计算机/电气/电子信息/临床/金融",tip:"城市>学校>专业。北上广深杭的211可能比偏远985更有价值。"},
+{min:580,t:"中下985/强势211",s:"兰大/中海洋/央财/上财/北邮/南航/南理工/西电",m:"计算机/软件/电气/通信/统计",tip:"性价比最高区间。理工科选专业，文科选学校。"},
+{min:540,t:"普通211/强势双非",s:"合工大/安大/河海/苏大/深大/杭电/南邮",m:"计算机/软件/电气/会计/信息安全",tip:"重点关注城市。深大非211但深圳就业不输211。"},
+{min:500,t:"普通一本/公办二本",s:"省属重点/行业院校",m:"计算机/护理/会计/电气/工程造价",tip:"专业为王。就业率高有技术壁垒的专业>好听但失业的专业。"},
+{min:450,t:"二本/民办",s:"公办二本优先",m:"计算机/护理/学前/会计",tip:"能不能就业是第一位。大城市+好就业专业。"},
+{min:0,t:"专科",s:"公办高职",m:"护理/计算机/电气自动化/学前",tip:"专科不是终点。选对方向后面专升本也行。"},
+];
+const PROV=["北京","天津","河北","山西","内蒙古","辽宁","吉林","黑龙江","上海","江苏","浙江","安徽","福建","江西","山东","河南","湖北","湖南","广东","广西","海南","重庆","四川","贵州","云南","西藏","陕西","甘肃","青海","宁夏","新疆"];
+
+// ── 主引擎 ────────────────────────────────────────
+function findAnswer(raw){
+  const msg=raw;
+
+  // 0. 打招呼
+  if(/^(你好|hi|hello|hey|您好|嗨|哈喽|在吗|有人吗|你好啊)\s*[！!。.]*$/.test(msg.trim())){
+    const g=["别整虚的。直接说——哪个专业？多少分？哪个省？","来了就别空手走。专业、分数、考研、就业，随便问。","有话直说。查专业、填志愿还是做测评？"];
+    return g[Math.floor(Math.random()*g.length)];
+  }
+
+  // 1. 大学+专业匹配（如"武汉理工的测控技术与仪器"）
+  let uniAns=handleUniMajor(msg);
+  if(uniAns)return uniAns;
+
+  // 2. 省份+分数
+  let volAns=handleVolunteer(msg);
+  if(volAns)return volAns;
+
+  // 3. 专业匹配
+  let majAns=findMajor(msg);
+  if(majAns)return majAns;
+
+  // 4. 大学匹配
+  let uniOnly=findUni(msg);
+  if(uniOnly)return uniOnly;
+
+  // 5. 话题匹配
+  let topAns=findTopic(msg);
+  if(topAns)return topAns;
+
+  // 6. 兜底
+  return fallback(msg);
+}
+
+// ── 大学+专业 ─────────────────────────────────────
+function handleUniMajor(msg){
+  let uni=null, major=null;
+  for(let n in UNI){if(msg.includes(n)){uni=n;break}}
+  if(!uni){
+    // 尝试缩写匹配（如"武理工""华科""北邮"）
+    const abbr={"武理工":"武汉理工大学","华科":"华中科技大学","武大":"武汉大学","北邮":"北京邮电大学","西电":"西安电子科技大学","杭电":"杭州电子科技大学","南邮":"南京邮电大学","上财":"上海财经大学","央财":"中央财经大学","电子科大":"电子科技大学","北航":"北京航空航天大学","北理":"北京理工大学","哈工大":"哈尔滨工业大学"};
+    for(let[a,n]of Object.entries(abbr)){if(msg.includes(a)){uni=n;break}}
+  }
+  if(uni){
+    // 在用户消息中找专业名
+    for(let n in DB){if(msg.includes(n)){major=n;break}}
+    if(!major){
+      // 尝试从大学的强势专业中匹配
+      let u=UNI[uni];
+      for(let s of u.strong){if(msg.includes(s)){for(let n in DB){if(n.includes(s)){major=n;break}}if(major)break}}
+    }
+  }
+  if(!uni||!major)return null;
+
+  let u=UNI[uni], d=DB[major];
+  let isStrong=u.strong.some(s=>major.includes(s)||s.includes(major.slice(0,2)));
+  let verdict=isStrong?`这是${uni}的**王牌方向之一**，认可度高。`:`${uni}的${major}不是最强方向，但学校牌子够用。`;
+
+  return `**${uni}**的**${major}**——我给你分析：\n\n🏫 **学校：** ${uni}（${u.tier}）· ${u.city}\n📊 **专业数据：** 就业率${d.rate}，月薪${d.salary}，考研${d.kaoyan}，对口${d.match}\n⭐ **匹配度：** ${verdict}\n\n💬 ${d.tip}\n\n${u.note}`;
+}
+
+// ── 省份+分数 ─────────────────────────────────────
+function handleVolunteer(msg){
+  let sm=msg.match(/(\d{2,3})\s*分/);
+  let score=sm?parseInt(sm[1]):0;
+  let prov='';
+  for(let p of PROV)if(msg.includes(p)){prov=p;break}
+  if(!prov&&(msg.includes("高考")||msg.includes("志愿")||msg.includes("报考"))){
+    return `填志愿先答三问：\n1. **哪个省？** 江苏600和河南600不是一个概念\n2. **多少分？** 具体分数才能定位\n3. **家里做什么？** 条件不同策略不同\n\n说我帮你**掰扯明白**。`;
+  }
+  if(!prov)return null;
+  if(!score)return `**${prov}**考生？还要**分数**。\n\n- 650+：顶尖985\n- 600-650：中上985/强势211\n- 550-600：普通211\n- 500-550：一本线\n- 500以下：专业为王\n\n多少分？`;
+  let t=TIERS.find(x=>score>=x.min)||TIERS[TIERS.length-1];
+  return `**${prov}**，**${score}分**。定位：**${t.t}**\n\n🎯 能冲：${t.s}\n📚 推荐方向：${t.m}\n\n${t.tip}\n\n⚠️ 具体到${prov}投档线每年波动，建议查一分一段表+目标校近三年分数。`;
+}
+
+// ── 专业匹配 ─────────────────────────────────────
+function findMajor(msg){
+  let best=null,bs=0;
+  for(let n in DB){
+    let s=0;
+    if(msg.includes(n))s=100;
+    else{
+      let clean=n.replace(/（.*?）/g,'');
+      if(msg.includes(clean))s=95;
+      else{
+        let ws=clean.split(/[\/\-]/);
+        for(let w of ws){if(w.length>=2&&msg.includes(w))s=Math.max(s,50+w.length*3)}
+        if(msg.includes(clean.slice(0,2)))s=Math.max(s,35);
+      }
+    }
+    if(s>bs){bs=s;best=n}
+  }
+  if(bs>=30&&best){
+    let d=DB[best];
+    return `**${best}**（${d.cat}）\n\n📊 就业率${d.rate}　月薪${d.salary}　考研${d.kaoyan}　对口${d.match}\n🏙 ${d.city}\n\n💬 ${d.tip}`;
+  }
+  return null;
+}
+
+// ── 大学匹配 ─────────────────────────────────────
+function findUni(msg){
+  let best=null;
+  for(let n in UNI){if(msg.includes(n)){best=n;break}}
+  if(!best){
+    const abbr={"武理工":"武汉理工大学","华科":"华中科技大学","武大":"武汉大学","北邮":"北京邮电大学","西电":"西安电子科技大学","杭电":"杭州电子科技大学","南邮":"南京邮电大学","上财":"上海财经大学","央财":"中央财经大学"};
+    for(let[a,n]of Object.entries(abbr)){if(msg.includes(a)){best=n;break}}
+  }
+  if(!best)return null;
+  let u=UNI[best];
+  return `**${best}**（${u.tier}）· ${u.city}\n\n💪 王牌专业：${u.strong.join('、')}\n\n${u.note}\n\n想了解具体哪个专业？直接问我。`;
+}
+
+// ── 话题匹配 ─────────────────────────────────────
+function findTopic(msg){
+  const T=[
+[/天坑|生化环材/,"**四天王，没读博别逞强。**\n- 生物工程 80.1%\n- 化工（环境差）\n- 环境工程 83.2%\n- 材料（不读博没研发岗）\n\n有矿追热爱，没矿——劝你善良。"],
+[/计算机.*前景|编程.*就业/,"**计算机**93.9%就业，月薪7500+。分化严重：\n- 985硕→大厂30万+\n- 双非→外包运维\n\n关键：城市+学历+方向。现在选CS=打了八折的赛道，依然比生化环材强。"],
+[/金融.*值|金融.*能学/,"**没矿别碰金融。** 85.8%就业率看着行，月薪中位数才6000。90%的人在银行网点卖理财。\n\n除非家里搞金融，否则选计算机至少有手艺。"],
+[/考研.*值|读研.*必要/,"**看专业。**\n必须考：临床/生化环材/AI/物理\n可不考：计算机/护理/软件/会计\n\n**最多考两次。** 25岁还在考研，同龄人已工作3年。"],
+[/双非.*985|二本.*考研/,"**看专业。** 理工科必须考（天花板低），文科看学校（牌子过筛子）。\n\n1. 选够得着的985别冲清北\n2. 专业>学校名头\n3. 最多两次"],
+[/考公|公务员|体制/,"三四线→考公性价比极高\n一线→考研优先\n\n不冲突——哪个先上岸去哪个。最容易考公的专业：法学/中文/会计/计算机。"],
+[/临床|学医|医生/,"**最苦的路。** 5年+规培3年。但越老越值钱。\n\n推荐：口腔（92.8%自己开业）、麻醉（最好就业之一）、影像（不上手术台）"],
+[/ai.*取代|人工智能.*影响/,"安全：临床/牙医/电气/护理\n危险：基础程序员/翻译/设计/会计\n\nAI替代低端岗不是专业。往上走就行。"],
+[/文科.*选/,"1. 法学（法考=铁饭碗）\n2. 中文（考公万金油）\n3. 会计（89.1%就业）\n\n别选新闻（80%没干本行）、英语（AI替代）、工商管理（太杂）。"],
+[/土木|建筑.*劝/,"基建时代过去。土木85.3%逐年降，建筑82.1%画图到秃。\n\n一定学→工程造价最好就业。"],
+[/电气.*好|国网/,"92.1%就业。进国网敲门砖，稳定但天花板不高。\n高薪→新能源（宁德/比亚迪）或芯片。"],
+[/薪资|工资.*排行/,"1. 集成电路 12000\n2. AI 10000\n3. 软件 8000\n4. 金融工程 8000\n5. 口腔 8000\n6. 计算机 7500\n7. 电气 6500\n8. 临床 6000（规培期）\n\n**中位数比平均靠谱。**"],
+[/选专业.*逻辑|志愿.*怎么填/,"1. 家庭条件（有矿追热爱没矿看就业）\n2. 擅长科目（数理→理工，文科→法/师）\n3. 城市（优先发达城市）\n4. 学校（理工选专业，文科选学校）\n\n你多少分哪个省？"],
+[/就业率.*排行/,"1. 护理 95%\n2. 软件 94.5%\n3. 集成电路 93.5%\n4. 信息安全 92.3%\n5. 电气 92.1%\n6. 口腔 92.8%\n\n最低：法学72.3%、新闻78.5%"],
+[/转行|跨专业/,"成本最高：临床（5+3年）、法学（法考白考）\n最低：计算机/数学/物理（技能通用）\n\n我给排水毕业现在做教育做投资。**专业让我活下来，选择让我走更远。**"],
+[/985.*211|学校.*层次/,"985（39所）：前2%，硬通货\n211（112所）：央企国企门槛\n双一流：部分非211也有好学科\n普通一本：看专业\n二本/专科：专业为王+城市优先"],
+[/35岁|中年危机/,"互联网→真的。不升管理就危险\n医学→假的。越老越值钱\n体制内→假的。铁饭碗\n\n**你的工资和不可替代性成正比。**"],
+[/女生.*专业|女孩/,"不存在'女生适合'的专业。\n\n推荐：口腔（自己开业）、会计（各城市都能找）、师范（稳定寒暑假）、计算机（别被偏见限制）\n\n**别因性别放弃理工科。**"],
+[/师范|当老师/,"别选教育学（学理论不是教学）。\n选学科师范：数学师范/英语师范/物理师范。\n\n优势：寒暑假/稳定/社会地位\n劣势：薪资4500-6000/编制难考"],
+[/口腔|牙医/,"**医学里性价比最高。** 92.8%就业，月薪8000+。5年制。\n\n去向：公立口腔科/私立诊所/自己开业。AI不能帮你拔牙。"],
+[/护理.*好/,"**95%就业率最高。** 但辛苦：夜班/强度大/薪资5000封顶。\n\n适合：不怕苦求稳定家境一般\n不适合：想赚钱/想轻松"],
+  ];
+  for(let[r,a]of T)if(r.test(msg))return a;
+  return null;
+}
+
+// ── 兜底 ─────────────────────────────────────────
+function fallback(msg){
+  let ms=msg.match(/[\u4e00-\u9fa5]{2,6}/g)||[];
+  for(let m of ms)if(DB[m])return findMajor(m);
+  const fs=[
+    `这个问题超出了我的范围。我能帮你的是：\n\n**查专业** — 输入专业名（60+专业数据）\n**查大学** — 输入大学名（30+大学）\n**问组合** — "武理工测控怎么样"\n**填志愿** — "江苏600分"\n**做测评** — 8道题找方向`,
+    `你具体想问什么？缩小范围我帮你分析：\n- 哪个**专业**好不好？\n- 哪个**大学**怎么样？\n- 大学+专业**组合**（如"华科计算机"）\n- **多少分**能上什么学校？`,
+  ];
+  return fs[Math.floor(Math.random()*fs.length)];
+}
+
+// ── 测评 ─────────────────────────────────────────
+const QS=[
+{q:"最擅长或感兴趣的科目类型？",o:["A. 数理逻辑 — 数学/物理","B. 语言文史 — 语文/历史/英语","C. 社会经济 — 政治/地理","D. 自然科学 — 生物/化学"]},
+{q:"你最大的优势？",o:["A. 逻辑思维强","B. 表达沟通好","C. 执行力强","D. 创造力强"]},
+{q:"家庭经济条件？",o:["A. 比较宽裕","B. 中等偏上","C. 一般","D. 比较困难"]},
+{q:"倾向什么工作环境？",o:["A. 大城市写字楼","B. 稳定体制内","C. 技术研发岗","D. 自由灵活"]},
+{q:"对读研的看法？",o:["A. 必须读","B. 看情况","C. 不太想读","D. 还没想好"]},
+{q:"如果选一个方向？",o:["A. 高薪但压力大","B. 稳定有保障","C. 有技术壁垒","D. 兴趣所在"]},
+{q:"选大学最看重？",o:["A. 学校牌子","B. 城市位置","C. 专业实力","D. 录取概率"]},
+{q:"10年后收入预期？",o:["A. 年薪50万+","B. 20-30万够用","C. 不追求高薪","D. 没想过那么远"]},
+];
+const CMTS=["行，记下了。","嗯，还行。下一题。","你这选择有意思。","可以，继续。","你这情况我见多了。","稳字当头。","思路不错。","想不清楚？没事，我帮你捋。"];
+
+function recommend(a){
+  let sc={};for(let k in DB)sc[k]=5;
+  const v=a.map(x=>"ABCD".indexOf(x));
+  if(v[0]===0)["计算机科学与技术","软件工程","电气工程及其自动化","集成电路设计","统计学","信息安全"].forEach(k=>{if(sc[k])sc[k]+=2});
+  if(v[0]===1)["汉语言文学","法学","教育学","新闻学"].forEach(k=>{if(sc[k])sc[k]+=2});
+  if(v[0]===2)["经济学","金融学","会计学","知识产权"].forEach(k=>{if(sc[k])sc[k]+=2});
+  if(v[0]===3)["临床医学(五年制)","口腔医学","药学","数学与应用数学"].forEach(k=>{if(sc[k])sc[k]+=2});
+  if(v[2]===3)["计算机科学与技术","软件工程","护理学","会计学"].forEach(k=>{if(sc[k])sc[k]+=2});
+  if(v[2]<=1)["金融学","金融工程","经济学"].forEach(k=>{if(sc[k])sc[k]+=1});
+  if(v[3]===1)["电气工程及其自动化","护理学","教育学","汉语言文学"].forEach(k=>{if(sc[k])sc[k]+=2});
+  if(v[3]===2)["计算机科学与技术","集成电路设计","临床医学(五年制)"].forEach(k=>{if(sc[k])sc[k]+=2});
+  if(v[7]===0)["计算机科学与技术","软件工程","金融工程","集成电路设计"].forEach(k=>{if(sc[k])sc[k]+=2});
+  if(v[4]===2)["计算机科学与技术","软件工程","护理学"].forEach(k=>{if(sc[k])sc[k]+=1});
+  return Object.entries(sc).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([n,s])=>({major:n,score:Math.min(10,Math.max(5,Math.round(s*1.2))),reason:DB[n]?DB[n].tip:""}));
+}
+
+// ── UI 层 ───────────────────────────────────────
+let chatContext=[];
+
+function switchTab(t){
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
+  document.getElementById('t'+t.charAt(0).toUpperCase()+t.slice(1)).classList.add('active');
+  document.getElementById('p'+t.charAt(0).toUpperCase()+t.slice(1)).classList.add('active');
+  if(t==='data')renderDB();
+}
+function enterApp(){
+  document.getElementById('splash').classList.add('hide');
+  document.getElementById('shareBtn').style.display='block';
+}
+function shareIt(){
+  const u=location.href;
+  if(navigator.clipboard)navigator.clipboard.writeText(u).then(()=>toast('链接已复制'));
+  else{const i=document.createElement('input');i.value=u;document.body.appendChild(i);i.select();document.execCommand('copy');document.body.removeChild(i);toast('链接已复制')}
+}
+function toast(m){const o=document.querySelector('.toast');if(o)o.remove();const t=document.createElement('div');t.className='toast';t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),3000)}
+
+function send(){
+  const inp=document.getElementById('chatIn'),msg=inp.value.trim();if(!msg)return;
+  inp.value='';
+  const ch=document.getElementById('chips');if(ch)ch.style.display='none';
+  // 移除之前的建议
+  const oldSug=document.querySelector('.suggestions');if(oldSug)oldSug.remove();
+  addMsg(msg,'user','chatBox');
+  chatContext.push(msg);
+  const ld=addLd('chatBox');
+  const delay=300+Math.random()*500;
+  setTimeout(()=>{
+    ld.remove();
+    const answer=findAnswer(msg);
+    addMsg(answer,'ai','chatBox');
+    // 自动生成后续建议
+    const sugs=genSuggestions(msg,answer);
+    if(sugs.length)addSuggestions(sugs);
+  },delay);
+}
+function ask(el){
+  document.getElementById('chatIn').value=el.textContent;send();
+}
+
+// ── 自动生成后续建议 ─────────────────────────────
+function genSuggestions(q,ans){
+  const sugs=[];
+  const ql=q.toLowerCase();
+  // 如果问了专业，建议问相关大学
+  for(let n in DB){
+    if(ql.includes(n)||ans.includes('**'+n)){
+      // 找包含该专业的大学
+      for(let u in UNI){
+        if(UNI[u].strong.some(s=>n.includes(s)||s.includes(n.slice(0,2)))){
+          sugs.push(u+'的'+n+'怎么样');break;
+        }
+      }
+      sugs.push(n+'考研值不值');
+      sugs.push(n+'薪资多少');
+      break;
+    }
+  }
+  // 如果问了大学，建议问该校专业
+  for(let u in UNI){
+    if(ql.includes(u)||ans.includes('**'+u)){
+      let strong=UNI[u].strong;
+      if(strong.length)sugs.push(u+'的'+strong[0]+'怎么样');
+      sugs.push(u+'录取分数线');
+      sugs.push(u+'就业最好的专业');
+      break;
+    }
+  }
+  // 通用建议
+  if(!sugs.length){
+    if(ql.includes('分'))sugs.push('什么专业就业率最高','985和211有什么区别','AI会取代哪些专业');
+    else if(ans.includes('就业'))sugs.push('哪些专业考研必须','考公好还是考研好','35岁危机是真的吗');
+    else sugs.push('计算机专业怎么样','口腔医学好就业吗','选专业应该看什么');
+  }
+  return sugs.slice(0,3);
+}
+
+function addSuggestions(sugs){
+  const box=document.getElementById('chatBox');
+  const div=document.createElement('div');
+  div.className='suggestions';
+  div.style.cssText='display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 6px 48px;animation:up .3s ease-out';
+  div.innerHTML='<span style="font-size:.7rem;color:var(--text-dim);width:100%;margin-bottom:2px;font-family:var(--mono)">FOLLOW-UP ↓</span>'+
+    sugs.map(s=>`<span class="chip" onclick="document.getElementById('chatIn').value='${s}';send()">${s}</span>`).join('');
+  box.appendChild(div);
+  div.scrollIntoView({behavior:'smooth',block:'end'});
+}
+
+function addMsg(text,who,boxId){
+  const box=document.getElementById(boxId),d=document.createElement('div');
+  d.className='msg'+(who==='user'?' user':'');
+  const av=who==='user'?'<div class="av me">YOU</div>':'<div class="av ai">峰</div>';
+  const fmt=who==='user'?text:text.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');
+  d.innerHTML=av+'<div class="bub">'+fmt+'</div>';
+  box.appendChild(d);d.scrollIntoView({behavior:'smooth',block:'end'});
+}
+function addLd(boxId){
+  const box=document.getElementById(boxId),d=document.createElement('div');
+  d.className='ld';
+  d.innerHTML='<div class="av ai" style="width:28px;height:28px;font-size:.6rem">峰</div><div class="bars"><span></span><span></span><span></span><span></span></div> 分析中';
+  box.appendChild(d);d.scrollIntoView({behavior:'smooth',block:'end'});return d;
+}
+
+// ── Data DB渲染 ──────────────────────────────────
+function renderDB(filter){
+  const el=document.getElementById('dCon');
+  let cats={};
+  for(let[name,info]of Object.entries(DB)){
+    let c=info.cat;
+    if(filter&&!name.includes(filter)&&!c.includes(filter))continue;
+    if(!cats[c])cats[c]=[];
+    cats[c].push({name,...info});
+  }
+  let html='';
+  if(!filter){
+    html+='<div class="wbox"><h4>WARNING — 天坑专业</h4><p><strong>生物工程 / 化学工程 / 环境工程 / 材料科学</strong><br>生化环材四天王，没读博士别逞强。本科出来基本找不到对口工作。</p></div>';
+    // 热门搜索
+    html+='<div class="chips" style="margin-bottom:14px"><span style="font-size:.7rem;color:var(--text-dim);width:100%;font-family:var(--mono)">HOT SEARCH</span>';
+    ['计算机','金融','临床医学','法学','电气','口腔','护理','人工智能','会计','土木'].forEach(k=>{
+      html+=`<span class="chip" onclick="document.getElementById('dIn').value='${k}';searchD()">${k}</span>`;
+    });
+    html+='</div>';
+  }
+  for(let[cat,items]of Object.entries(cats)){
+    html+=`<div class="dsec open"><div class="dh" onclick="this.parentElement.classList.toggle('open')"><h4>${cat}</h4><span class="ar">▼</span></div><div class="dbody" style="display:block"><table class="dtbl"><tr><th>专业</th><th style="cursor:pointer" onclick="sortTable(this,1)">就业率 ↕</th><th style="cursor:pointer" onclick="sortTable(this,2)">月薪 ↕</th><th>考研</th><th>对口率</th><th>点评</th></tr>`;
+    items.forEach(x=>{
+      const r=parseFloat(x.rate)||0,rc=r>=90?'good':r<80?'warn':'';
+      html+=`<tr><td class="mn">${x.name}</td><td class="${rc}">${x.rate}</td><td>${x.salary}</td><td>${x.kaoyan}</td><td>${x.match}</td><td class="note">${x.tip}</td></tr>`;
+    });
+    html+='</table></div></div>';
+  }
+  if(filter&&Object.keys(cats).length===0){
+    html+=`<div style="padding:28px;text-align:center;color:var(--text-dim);font-family:var(--mono)">NO RESULTS FOR "${filter}"</div>`;
+    html+='<div class="chips"><span class="chip" onclick="document.getElementById(\'dIn\').value=\'\';searchD()">清除搜索</span>';
+    // 推荐搜索
+    html+='<span class="chip" onclick="document.getElementById(\'dIn\').value=\'计算机\';searchD()">试试：计算机</span>';
+    html+='</div>';
+  }
+  el.innerHTML=html;
+}
+function searchD(){renderDB(document.getElementById('dIn').value.trim())}
+
+// ── Assessment ──────────────────────────────────
+function startAss(){
+  aRound=0;aAnswers=[];
+  document.getElementById('aStats').style.display='flex';
+  const p=document.getElementById('aDots');p.innerHTML='';p.style.display='flex';
+  for(let i=0;i<aTotal;i++){const d=document.createElement('div');d.className='pd'+(i===0?' on':'');p.appendChild(d)}
+  showQ();
+}
+function showQ(){
+  aRound++;updateUI();
+  const q=QS[aRound-1],box=document.getElementById('assChat');
+  // 点评
+  if(aRound>1){
+    const c=COMMENTS[Math.floor(Math.random()*COMMENTS.length)];
+    addMsg(c,'ai','assChat');
+  }
+  // 题目
+  const card=document.createElement('div');card.className='quiz-card';card.id='qCard';
+  let opts='';q.o.forEach((o,i)=>{opts+=`<button class="opt" onclick="pick(this,${i})" data-i="${i}"><span class="ltr">${'ABCD'[i]}</span><span>${o}</span></button>`});
+  card.innerHTML=`<h3>QUESTION ${aRound} / ${aTotal}</h3><div class="opts">${opts}</div>`;
+  box.appendChild(card);card.scrollIntoView({behavior:'smooth',block:'end'});
+}
+function pick(btn,idx){
+  if(btn.classList.contains('disabled'))return;
+  btn.classList.add('sel');
+  document.querySelectorAll('#qCard .opt').forEach(b=>b.classList.add('disabled'));
+  const dots=document.querySelectorAll('.pd');
+  if(dots[aRound-1])dots[aRound-1].classList.add('done');
+  aAnswers.push('ABCD'[idx]);
+  if(aRound>=aTotal){
+    setTimeout(()=>{
+      const recs=recommend(aAnswers);
+      let html='<div class="msg"><div class="av ai">峰</div><div class="bub">行，8道题做完了。我给你<strong>捋清楚</strong>——</div></div>';
+      html+='<div class="rec-grid">';
+      recs.forEach(r=>{
+        html+=`<div class="rec-card"><div class="rs">${r.score}/10</div><div class="rm">${r.major}</div><div class="rr">${r.reason}</div></div>`;
+      });
+      html+='</div><br><button class="send-btn" onclick="location.reload()" style="width:100%">RESTART</button>';
+      const wrap=document.createElement('div');wrap.style.animation='up .5s ease-out';wrap.innerHTML=html;
+      document.getElementById('assChat').appendChild(wrap);
+      wrap.scrollIntoView({behavior:'smooth',block:'end'});
+      document.querySelectorAll('.pd').forEach(d=>d.classList.add('done'));
+    },800);
+  }else{
+    setTimeout(()=>showQ(),800);
+  }
+}
+function updateUI(){
+  document.getElementById('aR').textContent=aRound+'/'+aTotal;
+  document.getElementById('aP').textContent=Math.round(aRound/aTotal*100)+'%';
+  document.querySelectorAll('.pd').forEach((d,i)=>{d.classList.remove('on');if(i===aRound)d.classList.add('on')});
+}
+
+// ── Init ────────────────────────────────────────
