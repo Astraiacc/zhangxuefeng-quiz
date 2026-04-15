@@ -617,11 +617,4 @@ if __name__ == "__main__":
         print("  专业数据库和测评功能可正常使用")
         print()
 
-    # 自动打开浏览器
-    def open_browser():
-        import time
-        time.sleep(1.5)
-        webbrowser.open(f"http://localhost:{port}")
-    threading.Thread(target=open_browser, daemon=True).start()
-
     app.run(host="0.0.0.0", port=port, debug=False)
