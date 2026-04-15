@@ -15,6 +15,38 @@ from flask_cors import CORS
 app = Flask(__name__, static_folder="static")
 CORS(app)
 
+
+def load_config():
+    """自动加载配置：优先环境变量，其次 Claude Code settings.json"""
+    # 已有环境变量则直接用
+    if os.environ.get("ANTHROPIC_AUTH_TOKEN") or os.environ.get("ANTHROPIC_API_KEY"):
+        return
+
+    # 从 Claude Code 配置读取
+    settings_paths = [
+        os.path.expanduser("~/.claude/settings.json"),
+        os.path.expanduser("~/.claude/settings.local.json"),
+    ]
+    for path in settings_paths:
+        if os.path.exists(path):
+            try:
+                with open(path, "r", encoding="utf-8") as f:
+                    cfg = json.load(f)
+                env = cfg.get("env", {})
+                for key in ["ANTHROPIC_AUTH_TOKEN", "ANTHROPIC_BASE_URL",
+                            "ANTHROPIC_DEFAULT_SONNET_MODEL", "ANTHROPIC_DEFAULT_OPUS_MODEL",
+                            "ANTHROPIC_DEFAULT_HAIKU_MODEL"]:
+                    if key in env and not os.environ.get(key):
+                        os.environ[key] = env[key]
+                if os.environ.get("ANTHROPIC_AUTH_TOKEN"):
+                    print(f"  [配置] 从 {path} 加载 API Key")
+                    return
+            except Exception:
+                pass
+
+
+load_config()
+
 client = anthropic.Anthropic()
 MODEL = os.environ.get("ANTHROPIC_DEFAULT_SONNET_MODEL", "xiaomi/mimo-v2-pro")
 
