@@ -16,13 +16,14 @@ if errorlevel 1 (
 )
 
 echo  [2/4] Installing dependencies...
-pip install flask flask-cors anthropic ddgs -q
+pip install flask flask-cors anthropic qianfan ddgs -q
 echo  [OK] Done
 
 echo  [3/4] Loading config...
 echo  [OK] Ready
 
 echo  [4/4] Starting...
+echo  [OK] AI Provider: %AI_PROVIDER% (默认: anthropic)
 echo.
 echo  ==========================================
 echo    Open: http://localhost:5000
