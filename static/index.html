@@ -3,22 +3,36 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>张雪峰 · 智能志愿百科</title>
-<meta name="description" content="用张雪峰的思维框架分析高考志愿、考研规划和就业方向。职业倾向测评帮你找对方向，38+专业数据库随查随用。">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>峰</text></svg>">
+<title>东莞城市学院· 智能志愿百科</title>
+<meta name="description" content="用陈熙婧的思维框架分析高考志愿、考研规划和就业方向。职业倾向测评帮你找对方向，38+专业数据库随查随用。">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>熙</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --bg:#0d0d12;--bg2:#141418;--bg3:#1c1c22;
-  --border:#252530;--border2:#333340;
-  --accent:#e8a030;--accent2:#f0b850;--accent-bg:rgba(232,160,48,0.06);
-  --blue:#5b8def;--green:#34d399;--red:#f87171;
-  --text:#d4d4d8;--text2:#9ca3af;--text3:#6b7280;
-  --sans:'LXGW WenKai','Noto Serif SC','PingFang SC','Microsoft YaHei',serif;
-  --display:'LXGW WenKai','ZCOOL XiaoWei','Noto Serif SC',serif;
-  --mono:'JetBrains Mono','SF Mono','Consolas',monospace;
-  --radius:14px;
+:root {
+  --bg: #0d0d12;
+  --bg2: #141418;
+  --bg3: #1c1c22;
+  --border: #252530;
+  --border2: #333340;
+  
+  /* 原来的金黄色改成蓝色 */
+  --accent: #5b8def;        /* 主强调色：蓝 */
+  --accent2: #7aa3f5;      /* 强调色变体：更亮的蓝 */
+  --accent-bg: rgba(91, 141, 239, 0.06);  /* 半透明蓝色背景 */
+  
+  /* 如果原来 --blue 和 --accent 同色，可以换个辅助蓝 */
+  --blue: #3b6de0;
+  
+  --green: #34d399;
+  --red: #f87171;
+  --text: #d4d4d8;
+  --text2: #9ca3af;
+  --text3: #6b7280;
+  --sans: 'LXGW WenKai', 'Noto Serif SC', 'PingFang SC', 'Microsoft YaHei', serif;
+  --display: 'LXGW WenKai', 'ZCOOL XiaoWei', 'Noto Serif SC', serif;
+  --mono: 'JetBrains Mono', 'SF Mono', 'Consolas', monospace;
+  --radius: 14px;
 }
 html{font-size:16px;scroll-behavior:smooth}
 body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;line-height:1.7}
@@ -183,24 +197,24 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:1
 
 <!-- Splash -->
 <div class="splash" id="splash">
-  <h1>张<em>雪峰</em>说</h1>
-  <div class="desc">用张雪峰的思维框架帮你分析<br>高考志愿、考研规划、就业方向</div>
+  <h1>陈<em>熙婧</em>说</h1>
+  <div class="desc">用陈熙婧的思维框架帮你分析<br>高考志愿、考研规划、就业方向</div>
   <div class="cards">
     <div class="card"><div class="icon"></div><div class="name">百科问答</div><div class="info">60+专业 30+大学</div></div>
     <div class="card"><div class="icon"></div><div class="name">职业测评</div><div class="info">8题找到方向</div></div>
     <div class="card"><div class="icon"></div><div class="name">志愿填报</div><div class="info">省份+分数定位</div></div>
   </div>
   <button class="enter" onclick="enterApp()">开始使用</button>
-  <div class="foot">基于张雪峰5大心智模型 · AI驱动 · 联网搜索</div>
+  <div class="foot">基于陈熙婧5大心智模型 · AI驱动 · 联网搜索</div>
 </div>
 
 <div class="app">
 
   <div class="header">
-    <h1>张<em>雪峰</em>说</h1>
+    <h1>陈<em>熙婧</em>说</h1>
     <div class="quote">
       「社会就是一个大筛子，用学历筛孩子，用房子筛父母，用工作筛家庭。」
-      <span class="by">—— 张雪峰，黑龙江齐齐哈尔人，考研名师，全网4000万粉丝</span>
+      <span class="by">—— 陈熙婧，黑龙江齐齐哈尔人，考研名师，全网4000万粉丝</span>
     </div>
   </div>
 
@@ -213,7 +227,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:1
   <!-- CHAT -->
   <div class="panel active" id="pChat">
     <div class="chat" id="chatBox">
-      <div class="msg"><div class="av ai">峰</div><div class="bub">我跟你说，这个系统<strong>不是闹着玩的</strong>。38+专业就业数据，张雪峰框架帮你分析。<br><br>高考志愿、考研规划、就业方向——随便问，我给你<strong>掰扯明白</strong>。<br><br><span style="color:var(--text-dim);font-size:.78rem">试试下面的问题 ↓</span></div></div>
+      <div class="msg"><div class="av ai">峰</div><div class="bub">我跟你说，这个系统<strong>不是闹着玩的</strong>。38+专业就业数据，陈熙婧框架帮你分析。<br><br>高考志愿、考研规划、就业方向——随便问，我给你<strong>掰扯明白</strong>。<br><br><span style="color:var(--text-dim);font-size:.78rem">试试下面的问题 ↓</span></div></div>
       <div class="chips" id="chips">
         <span class="chip" onclick="ask(this)">计算机专业就业前景</span>
         <span class="chip" onclick="ask(this)">双非考研985值不值</span>
@@ -226,7 +240,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:1
       </div>
     </div>
     <div class="input-bar">
-      <input type="text" id="chatIn" placeholder="问张雪峰任何关于高考/考研/就业的问题..." onkeydown="if(event.key==='Enter')send()">
+      <input type="text" id="chatIn" placeholder="问陈熙婧任何关于高考/考研/就业的问题..." onkeydown="if(event.key==='Enter')send()">
       <button class="send-btn" onclick="send()">SEND</button>
     </div>
   </div>
@@ -266,7 +280,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:1
 
 // ── 专业数据库 ─────────────────────────────────────
 const DB={
-"计算机科学与技术":{cat:"工学/计算机类",rate:"93.9%",salary:"7500",kaoyan:"35%",match:"85%",city:"北京/深圳/杭州/上海",tip:"普通家庭逆袭黄金赛道，但已卷成麻花。985硕进大厂年薪30万+，双非可能做外包。别带'学计算机=财务自由'的幻想进来。"},
+"计算机科学与技术":{cat:"工学/计算机类",rate:"93.9%",salary:"7500",kaoyan:"35%",match:"85%",city:"北京/深圳/杭州/上海",tip:"普通家庭逆袭陈金赛道，但已卷成麻花。985硕进大厂年薪30万+，双非可能做外包。别带'学计算机=财务自由'的幻想进来。"},
 "软件工程":{cat:"工学/计算机类",rate:"94.5%",salary:"8000",kaoyan:"25%",match:"88%",city:"深圳/杭州/北京/成都",tip:"比计算机更偏工程，上手快。35岁危机同样存在，但就业率够高。"},
 "人工智能":{cat:"工学/计算机类",rate:"91.2%",salary:"10000",kaoyan:"60%",match:"70%",city:"北京/深圳/杭州",tip:"门槛高，本科做不了核心岗。算法岗内卷——400分不一定有学上。"},
 "数据科学与大数据":{cat:"工学/计算机类",rate:"90.5%",salary:"8500",kaoyan:"40%",match:"72%",city:"北京/上海/深圳/杭州",tip:"数据分析需求大但天花板不高。想做算法得读研。"},
@@ -443,7 +457,7 @@ function handleVolunteer(msg){
   let prov='';
   for(let p of PROV)if(msg.includes(p)){prov=p;break}
   if(!prov&&(msg.includes("高考")||msg.includes("志愿")||msg.includes("报考"))){
-    return `填志愿先答三问：\n1. **哪个省？** 江苏600和河南600不是一个概念\n2. **多少分？** 具体分数才能定位\n3. **家里做什么？** 条件不同策略不同\n\n说我帮你**掰扯明白**。`;
+    return `填志愿先答三问：\n1. **哪个省？** 江苏600和河南600不是一个概念\n2. **多少分？** 具体分数才能定位\n3. **家里做什么？** 条件不同策略不同\n\n说我帮你**掰扯明白**。**`;
   }
   if(!prov)return null;
   if(!score)return `**${prov}**考生？还要**分数**。\n\n- 650+：顶尖985\n- 600-650：中上985/强势211\n- 550-600：普通211\n- 500-550：一本线\n- 500以下：专业为王\n\n多少分？`;
@@ -720,7 +734,7 @@ function md2html(t){
   t=t.replace(/^- (.+)$/gm,'<div style="padding:2px 0 2px 12px">• $1</div>');
   t=t.replace(/^(\d+)\. (.+)$/gm,'<div style="padding:2px 0"><span style="color:var(--accent);font-weight:700;margin-right:6px">$1.</span>$2</div>');
   // 分隔线
-  t=t.replace(/^---+$/gm,'<hr style="border:none;border-top:1px solid var(--border);margin:10px 0">');
+  t=t.replace(/^---+/gm,'<hr style="border:none;border-top:1px solid var(--border);margin:10px 0">');
   // 换行
   t=t.replace(/\n\n/g,'</p><p>');
   t=t.replace(/\n/g,'<br>');
@@ -876,8 +890,8 @@ function updateUI(){
 
 // ── Init ────────────────────────────────────────
 function shareResult(){
-  const text='我在张雪峰智能志愿百科做了职业测评，推荐专业：'+(document.querySelector('.rec-card .rm')?document.querySelector('.rec-card .rm').textContent:'未知');
-  if(navigator.share)navigator.share({title:'张雪峰说 · 我的测评结果',text,url:location.href});
+  const text='我在陈熙婧智能志愿百科做了职业测评，推荐专业：'+(document.querySelector('.rec-card .rm')?document.querySelector('.rec-card .rm').textContent:'未知');
+  if(navigator.share)navigator.share({title:'陈熙婧说 · 我的测评结果',text,url:location.href});
   else if(navigator.clipboard)navigator.clipboard.writeText(text+'\n'+location.href).then(()=>toast('结果已复制'));
   else toast('请手动复制链接分享');
 }
