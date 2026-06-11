@@ -8,16 +8,12 @@
 import os
 import json
 import re
+
+from dotenv import load_dotenv
+
 import anthropic
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
-
-# 百度千帆 SDK（可选导入，未安装时回退到 Anthropic）
-try:
-    import qianfan
-    QIANFAN_AVAILABLE = True
-except ImportError:
-    QIANFAN_AVAILABLE = False
 
 app = Flask(__name__, static_folder="static")
 CORS(app)
@@ -52,71 +48,11 @@ def load_config():
                 pass
 
 
+load_dotenv()
 load_config()
 
-
-# ── AI 提供商抽象层 ──────────────────────────────────────────
-class AIProvider:
-    """AI 提供商抽象基类"""
-    def chat(self, messages, system_prompt="", max_tokens=2048):
-        raise NotImplementedError
-
-
-class AnthropicProvider(AIProvider):
-    """Anthropic/Claude 提供商（封装现有逻辑）"""
-    def __init__(self, model):
-        self.client = anthropic.Anthropic()
-        self.model = model
-
-    def chat(self, messages, system_prompt="", max_tokens=2048):
-        resp = self.client.messages.create(
-            model=self.model,
-            max_tokens=max_tokens,
-            system=system_prompt,
-            messages=messages,
-        )
-        return _extract_text(resp)
-
-
-class QianfanProvider(AIProvider):
-    """百度千帆提供商"""
-    def __init__(self, model="ERNIE-4.0-Turbo"):
-        self.model = model
-        self.client = qianfan.ChatCompletion(model=model)
-
-    def chat(self, messages, system_prompt="", max_tokens=2048):
-        qianfan_messages = []
-        if system_prompt:
-            qianfan_messages.append({"role": "system", "content": system_prompt})
-        qianfan_messages.extend(messages)
-        resp = self.client.do(
-            messages=qianfan_messages,
-            max_output_tokens=max_tokens,
-        )
-        return resp.get("result", "")
-
-
-def init_ai_provider():
-    """根据环境变量初始化 AI 提供商"""
-    provider_type = os.environ.get("AI_PROVIDER", "anthropic").lower()
-
-    if provider_type == "qianfan":
-        if not QIANFAN_AVAILABLE:
-            print("  [警告] qianfan SDK 未安装，回退到 Anthropic")
-            print("  请运行: pip install qianfan")
-            model = os.environ.get("ANTHROPIC_DEFAULT_SONNET_MODEL", "xiaomi/mimo-v2-pro")
-            return AnthropicProvider(model=model)
-        model = os.environ.get("QIANFAN_MODEL", "ERNIE-4.0-Turbo")
-        return QianfanProvider(model=model)
-    else:
-        model = os.environ.get("ANTHROPIC_DEFAULT_SONNET_MODEL", "xiaomi/mimo-v2-pro")
-        return AnthropicProvider(model=model)
-
-
-ai_provider = init_ai_provider()
+client = anthropic.Anthropic()
 MODEL = os.environ.get("ANTHROPIC_DEFAULT_SONNET_MODEL", "xiaomi/mimo-v2-pro")
-if os.environ.get("AI_PROVIDER", "anthropic").lower() == "qianfan":
-    MODEL = os.environ.get("QIANFAN_MODEL", "ERNIE-4.0-Turbo")
 
 # ── 张雪峰 System Prompt ─────────────────────────────────────
 SYSTEM_PROMPT = """你是张雪峰，本名张子彪，黑龙江齐齐哈尔富裕县人。考研名师出身，后转做高考志愿填报和考研规划，全网四千多万粉丝。
@@ -466,11 +402,8 @@ def search_and_chat():
     messages.append({"role": "user", "content": user_content})
 
     try:
-        reply = ai_provider.chat(
-            messages=messages,
-            system_prompt=SYSTEM_PROMPT,
-            max_tokens=2048,
-        )
+        response = client.messages.create(model=MODEL, max_tokens=2048, system=SYSTEM_PROMPT, messages=messages)
+        reply = _extract_text(response)
         messages.append({"role": "assistant", "content": reply})
         return jsonify({"success": True, "reply": reply, "searched": bool(search_results), "history": messages})
     except Exception as e:
@@ -482,11 +415,12 @@ def assessment_start():
     """职业倾向测评：开始 → 返回第一题 + AI开场白"""
     # AI 生成开场白
     try:
-        greeting = ai_provider.chat(
+        resp = client.messages.create(
+            model=MODEL, max_tokens=300,
+            system="用张雪峰东北毒舌风格，30字内打招呼。直接输出，不要输出别的。",
             messages=[{"role": "user", "content": "开始职业倾向测评"}],
-            system_prompt="用张雪峰东北毒舌风格，30字内打招呼。直接输出，不要输出别的。",
-            max_tokens=300,
         )
+        greeting = _extract_text(resp)
     except Exception:
         greeting = "来，我给你测测适合学啥。"
 
@@ -528,11 +462,12 @@ def assessment_answer():
         # 最后一轮 → AI 生成推荐
         answers_summary = "\n".join([f"第{a['round']}题: {a['question']} → {a['answer']}" for a in answers_log])
         try:
-            ai_reply = ai_provider.chat(
+            resp = client.messages.create(
+                model=MODEL, max_tokens=500,
+                system="你是张雪峰。根据用户的测评回答，用张雪峰风格给出3个推荐专业方向。每个推荐含：major(专业名)、reason(推荐理由50字内)、score(适合度1-10)。同时给一句总结。用纯文本回复，格式：推荐1：专业名(score/10) - 理由。最后写一句总结。",
                 messages=[{"role": "user", "content": f"用户测评结果：\n{answers_summary}"}],
-                system_prompt="你是张雪峰。根据用户的测评回答，用张雪峰风格给出3个推荐专业方向。每个推荐含：major(专业名)、reason(推荐理由50字内)、score(适合度1-10)。同时给一句总结。用纯文本回复，格式：推荐1：专业名(score/10) - 理由。最后写一句总结。",
-                max_tokens=500,
             )
+            ai_reply = _extract_text(resp)
             # 解析推荐
             recs = _parse_recommendations(ai_reply)
             return jsonify({
@@ -559,11 +494,12 @@ def assessment_answer():
         if 0 <= opt_index < len(q["options"]):
             chosen = q["options"][opt_index]
         try:
-            comment = ai_provider.chat(
+            resp = client.messages.create(
+                model=MODEL, max_tokens=200,
+                system="用张雪峰东北毒舌风格，50字内点评用户的选择。直接输出点评文字，不要输出别的。",
                 messages=[{"role": "user", "content": f"题目：{q['question']} 用户选了：{chosen}"}],
-                system_prompt="用张雪峰东北毒舌风格，50字内点评用户的选择。直接输出点评文字，不要输出别的。",
-                max_tokens=200,
             )
+            comment = _extract_text(resp)
         except Exception:
             comment = "行，记下了。下一题。"
 
@@ -769,30 +705,21 @@ if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
 
     # 环境检查
-    provider_type = os.environ.get("AI_PROVIDER", "anthropic").lower()
-    if provider_type == "qianfan":
-        ak = os.environ.get("QIANFAN_ACCESS_KEY", "")
-        sk = os.environ.get("QIANFAN_SECRET_KEY", "")
-        has_key = bool(ak and sk)
-        key_label = "百度千帆 AK/SK"
-    else:
-        api_key = os.environ.get("ANTHROPIC_AUTH_TOKEN") or os.environ.get("ANTHROPIC_API_KEY", "")
-        has_key = bool(api_key)
-        key_label = "ANTHROPIC_API_KEY"
+    api_key = os.environ.get("ANTHROPIC_AUTH_TOKEN") or os.environ.get("ANTHROPIC_API_KEY", "")
+    has_key = bool(api_key)
 
     print("=" * 55)
     print("  张雪峰智能志愿百科 v2")
     print("=" * 55)
-    print(f"  提供商: {provider_type.upper()}")
     print(f"  模型: {MODEL}")
     print(f"  端口: {port}")
-    print(f"  API Key: {'已配置' if has_key else f'未配置（{key_label}）'}")
+    print(f"  API Key: {'已配置' if has_key else '未配置（百科问答不可用）'}")
     print(f"  搜索: DuckDuckGo (免费)")
     print("=" * 55)
     print()
     if not has_key:
-        print(f"  [提示] 未检测到 {key_label}")
-        print("  百科问答需要配置对应的 API Key")
+        print("  [提示] 未检测到 API Key")
+        print("  百科问答需要 ANTHROPIC_API_KEY 环境变量")
         print("  专业数据库和测评功能可正常使用")
         print()
 
