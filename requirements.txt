@@ -4,3 +4,4 @@ anthropic>=0.30
 ddgs>=8.0
 gunicorn>=21.2
 python-dotenv>=1.0
+qianfan>=0.3.0

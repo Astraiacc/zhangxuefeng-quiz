@@ -11,6 +11,12 @@ import re
 
 from dotenv import load_dotenv
 
+try:
+    import qianfan
+    QIANFAN_AVAILABLE = True
+except ImportError:
+    QIANFAN_AVAILABLE = False
+
 import anthropic
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
@@ -53,6 +59,51 @@ load_config()
 
 client = anthropic.Anthropic()
 MODEL = os.environ.get("ANTHROPIC_DEFAULT_SONNET_MODEL", "xiaomi/mimo-v2-pro")
+
+
+# ── AI Provider 抽象层 ──────────────────────────────────────
+class AIProvider:
+    def chat(self, messages, system_prompt="", max_tokens=2048):
+        raise NotImplementedError
+
+
+class AnthropicProvider(AIProvider):
+    def __init__(self, model):
+        self.client = anthropic.Anthropic()
+        self.model = model
+
+    def chat(self, messages, system_prompt="", max_tokens=2048):
+        kwargs = dict(model=self.model, max_tokens=max_tokens, messages=messages)
+        if system_prompt:
+            kwargs["system"] = system_prompt
+        resp = self.client.messages.create(**kwargs)
+        return _extract_text(resp)
+
+
+class QianfanProvider(AIProvider):
+    def __init__(self, model="ERNIE-4.0-Turbo"):
+        self.client = qianfan.ChatCompletion(model=model)
+
+    def chat(self, messages, system_prompt="", max_tokens=2048):
+        qianfan_messages = []
+        if system_prompt:
+            qianfan_messages.append({"role": "system", "content": system_prompt})
+        qianfan_messages.extend(messages)
+        resp = self.client.do(messages=qianfan_messages, max_output_tokens=max_tokens)
+        return resp.get("result", "")
+
+
+def init_ai_provider():
+    provider_type = os.environ.get("AI_PROVIDER", "anthropic").lower()
+    if provider_type == "qianfan" and QIANFAN_AVAILABLE:
+        model = os.environ.get("QIANFAN_MODEL", "ERNIE-4.0-Turbo")
+        print(f"  [配置] 使用百度千帆模型: {model}")
+        return QianfanProvider(model)
+    print(f"  [配置] 使用 Anthropic 模型: {MODEL}")
+    return AnthropicProvider(MODEL)
+
+
+ai_provider = init_ai_provider()
 
 # ── 张雪峰 System Prompt ─────────────────────────────────────
 SYSTEM_PROMPT = """你是张雪峰，本名张子彪，黑龙江齐齐哈尔富裕县人。考研名师出身，后转做高考志愿填报和考研规划，全网四千多万粉丝。
@@ -402,7 +453,7 @@ def search_and_chat():
     messages.append({"role": "user", "content": user_content})
 
     try:
-        response = client.messages.create(model=MODEL, max_tokens=2048, system=SYSTEM_PROMPT, messages=messages)
+        response = ai_provider.chat(messages=messages, system_prompt=SYSTEM_PROMPT, max_tokens=2048)
         reply = _extract_text(response)
         messages.append({"role": "assistant", "content": reply})
         return jsonify({"success": True, "reply": reply, "searched": bool(search_results), "history": messages})
@@ -415,10 +466,10 @@ def assessment_start():
     """职业倾向测评：开始 → 返回第一题 + AI开场白"""
     # AI 生成开场白
     try:
-        resp = client.messages.create(
-            model=MODEL, max_tokens=300,
-            system="用张雪峰东北毒舌风格，30字内打招呼。直接输出，不要输出别的。",
+        resp = ai_provider.chat(
             messages=[{"role": "user", "content": "开始职业倾向测评"}],
+            system_prompt="用张雪峰东北毒舌风格，30字内打招呼。直接输出，不要输出别的。",
+            max_tokens=300,
         )
         greeting = _extract_text(resp)
     except Exception:
@@ -462,10 +513,10 @@ def assessment_answer():
         # 最后一轮 → AI 生成推荐
         answers_summary = "\n".join([f"第{a['round']}题: {a['question']} → {a['answer']}" for a in answers_log])
         try:
-            resp = client.messages.create(
-                model=MODEL, max_tokens=500,
-                system="你是张雪峰。根据用户的测评回答，用张雪峰风格给出3个推荐专业方向。每个推荐含：major(专业名)、reason(推荐理由50字内)、score(适合度1-10)。同时给一句总结。用纯文本回复，格式：推荐1：专业名(score/10) - 理由。最后写一句总结。",
+            resp = ai_provider.chat(
                 messages=[{"role": "user", "content": f"用户测评结果：\n{answers_summary}"}],
+                system_prompt="你是张雪峰。根据用户的测评回答，用张雪峰风格给出3个推荐专业方向。每个推荐含：major(专业名)、reason(推荐理由50字内)、score(适合度1-10)。同时给一句总结。用纯文本回复，格式：推荐1：专业名(score/10) - 理由。最后写一句总结。",
+                max_tokens=500,
             )
             ai_reply = _extract_text(resp)
             # 解析推荐
@@ -494,10 +545,10 @@ def assessment_answer():
         if 0 <= opt_index < len(q["options"]):
             chosen = q["options"][opt_index]
         try:
-            resp = client.messages.create(
-                model=MODEL, max_tokens=200,
-                system="用张雪峰东北毒舌风格，50字内点评用户的选择。直接输出点评文字，不要输出别的。",
+            resp = ai_provider.chat(
                 messages=[{"role": "user", "content": f"题目：{q['question']} 用户选了：{chosen}"}],
+                system_prompt="用张雪峰东北毒舌风格，50字内点评用户的选择。直接输出点评文字，不要输出别的。",
+                max_tokens=200,
             )
             comment = _extract_text(resp)
         except Exception:
